@@ -1,43 +1,37 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  ScrollView,
-  FlatList,
-} from "react-native";
+import { StyleSheet, View, Button, FlatList } from "react-native";
+import GoalInput from "./components/GoalInput";
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
-  const [entredGoals, setEntredGoals] = useState("");
   const [couresGoal, setCoursGoals] = useState([]);
-  const textChangerHandler = (enterdtext) => {
-    setEntredGoals(enterdtext);
-    console.log(enterdtext);
+  const [showModal, setShowModal] = useState(false);
+  const addGoalshandler = (goalTitle) => {
+    setCoursGoals([...couresGoal, { value: goalTitle, id: Math.random() }]);
+    setShowModal(false);
   };
 
-  const addGoalshandler = () => {
-    setCoursGoals([...couresGoal, entredGoals]);
-    console.log(couresGoal);
+  const deleteItemHandler = (goalId) => {
+    setCoursGoals((currentGoals) => {
+      return currentGoals.filter((goal) => goal.id != goalId);
+    });
+  };
+
+  const CancelHandler = () => {
+    setShowModal(false);
   };
   return (
     <View style={styles.mainWrapper}>
-      <View style={styles.topLayout}>
-        <TextInput
-          style={styles.inputStyles}
-          placeholder='Cours Goal'
-          onChangeText={textChangerHandler}
-        />
-        <Button title='Add' onPress={addGoalshandler} />
-      </View>
+      <Button title='Add Goal' onPress={() => setShowModal(true)} />
+      <GoalInput
+        visible={showModal}
+        addGoalshandler={addGoalshandler}
+        onCancel={CancelHandler}
+      />
       <FlatList
         data={couresGoal}
         renderItem={(goal) => (
-          <View style={styles.listItem}>
-            <Text key={goal}>{goal.item}</Text>
-          </View>
+          <GoalItem goal={goal} onDelete={deleteItemHandler} />
         )}
       />
     </View>
@@ -47,25 +41,5 @@ export default function App() {
 const styles = StyleSheet.create({
   mainWrapper: {
     padding: 30,
-  },
-  topLayout: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-  },
-  inputStyles: {
-    padding: 3,
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
-    marginVertical: 3,
-    width: "80%",
-  },
-  listItem: {
-    fontWeight: "bold",
-    backgroundColor: "#ccc",
-    borderColor: "black",
-    borderWidth: 1,
-    padding: 5,
-    margin: 3,
   },
 });
